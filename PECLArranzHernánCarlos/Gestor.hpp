@@ -4,36 +4,47 @@
 #include "Pila.hpp"
 #include "Cola.hpp"
 #include "Lista.hpp"
+#include "Proceso.hpp"
 
-class Gestor{
+#include <iostream>
+#include <cstdlib>
+
+class Gestor {
 private:
-	Pila pila;
-	Cola colaGPU0;
-	Cola colaGPU1;
-	Cola colaGPU2;
-	Cola colaGPU3;
-	Lista listaNormal;
-	Lista listaTiempoReal;
-public:
-	Gestor();  //Constructor
-	~Gestor();  //Destructor
-	
-	 void genera12Procesos();                 
-    void muestraProcesos();                   
-    void borraProcesosPila();                 
-    void encolarProcesos();                  
-    void muestraProcesosGPUs0y1();            
-    void muestraProcesosGPUs2y3();            
-    void borraProcesosColas();                
-    void enlistarProcesos();
-	void muestraProcesosNormal();                 
-    void muestraProcesosTiempoReal();        
-    void buscarProcesos();                    
-    void buscarProcesoPorNombreUsuario();     
-    void eliminarProcesoPorPID();             
-    void cambiarPrioridadProcesoPorPID();    
-    void reiniciar();                         
+    Pila pila;
+    Cola colas[4];
+    Lista listaNormal;
+    Lista listaTiempoReal;
+	int pidCounter;
+	int usuarioCounter;
+	int* arrayPIDs;
 
+public:
+    void genera12Procesos();
+    void muestraProcesos() const;
+    void borraProcesosPila();
+    void encolarProcesos();
+    void muestraProcesosGPUs0y1() const;
+    void muestraProcesosGPUs2y3() const;
+    void borraProcesosColas();
+    void enlistarProcesos();
+    void muestraProcesosNormal() const;
+    void muestraProcesosTiempoReal() const;
+    void buscarProcesos() const;
+    void buscarProcesoPorNombreUsuario() const;
+    void eliminarProcesoPorPID();
+    void cambiarPrioridadProcesoPorPID();
+    void reiniciar();
+
+    // Métodos adicionales para adaptarse al main
+    int ProcesosEnPila() const;
+    int ProcesosEnGPU0() const;
+    int ProcesosEnGPU1() const;
+    int ProcesosEnGPU2() const;
+    int ProcesosEnGPU3() const;
+    int ProcesosEnListaNormal() const;
+    int ProcesosEnListaTiempoReal() const;
+    int ProcesosEnArbol() const;
 };
 
-#endif
+#endif // GESTOR_HPP

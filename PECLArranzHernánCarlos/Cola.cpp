@@ -7,49 +7,76 @@ Cola::Cola()
 	longitud = 0;
 }
 
-void Cola::insertar(Proceso* p)
-{
-	pnodoCola nuevo;
-	nuevo = new NodoCola(p, ultimo);
-	if(ultimo)
-		ultimo->siguiente = nuevo;
-	
-	ultimo = nuevo;
-	
-	if(!primero)
-		primero = nuevo;
-	longitud++;
+void Cola::insertar(Proceso* p) {
+    pnodoCola nuevo = new NodoCola(p, nullptr);
+    
+    // Si la cola está vacía, simplemente inserta el nuevo nodo
+    if (!primero) {
+        primero = nuevo;
+        ultimo = nuevo;
+    } else {
+        pnodoCola actual = primero;
+        pnodoCola anterior = nullptr;
+
+        // Buscar la posición correcta para insertar el nuevo nodo
+        while (actual != nullptr && actual->proceso->getPrioridad() <= p->getPrioridad()) {
+            anterior = actual;
+            actual = actual->siguiente;
+        }
+
+        // Si se inserta al principio
+        if (anterior == nullptr) {
+            nuevo->siguiente = primero;
+            primero = nuevo;
+        } else {
+            // Inserta en medio o al final
+            nuevo->siguiente = actual;
+            anterior->siguiente = nuevo;
+            if (actual == nullptr) {
+                ultimo = nuevo; // Actualiza el último si se inserta al final
+            }
+        }
+    }
+    longitud++;
 }
 
-void Cola::mostrar()
-{
-	pnodoCola aux = primero;
-	std::cout << "El proceso cuyo PID es " + p->getPID() + " es de tiempo normal, su estado es" + p->getEstado() + " y su prioridad es: " + p->getPrioridad() << std::endl;
-	while(aux) {
-		cout <<"-> " << aux->proceso;
-		aux = aux->siguiente;
-	}
-	cout << endl;
+void Cola::mostrar() const {
+    pnodoCola aux = primero;
+    cout << "\tEl contenido de la cola es: " << endl;
+    while (aux) {
+        Proceso* proceso = aux->proceso; // Obtener el proceso del nodo
+        cout << "El proceso cuyo PID es " << proceso->getPID() 
+             << " es de tipo " << (proceso->esTiempoReal() ? "en tiempo real" : "normal") 
+             << ", su estado es " << (proceso->mostrar_proceso() ? "ejecución" : "parado") 
+             << " y su prioridad es: " << proceso->getPrioridad() << endl;
+        aux = aux->siguiente; // Avanzar al siguiente nodo
+    }
 }
 
 Proceso* Cola::eliminar()
 {
-	pnodoCola nodo;
-	Proceso* p;
-	nodo = primero;
-	if(!nodo)
-		return 0;
-	primero = nodo->siguiente;
-	p = nodo->proceso;
-	delete nodo;
-	if(!primero)
-		ultimo = NULL;
-	longitud--;
-	return p;
+	if (!primero) return nullptr;
+    pnodoCola nodo = primero;
+    Proceso* p = nodo->proceso;
+    primero = nodo->siguiente;
+    if (!primero) {
+        ultimo = nullptr;
+    }
+    delete nodo;
+    longitud--;
+    return p;
 }
 
-Proceso* Cola ::verPrimero(){
+Proceso* Cola ::verPrimero() const{
 	return primero->proceso;
+}
+
+bool Cola::estaVacia() const {
+    return primero == nullptr;
+}
+
+int Cola::getLongitud() const {
+    return longitud;
 }
 
 Cola::~Cola()

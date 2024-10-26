@@ -25,17 +25,15 @@ Proceso* Pila:: extraer()
 	p = nodo->proceso;
 	longitud--;
 	delete nodo;
-	return p
+	return p;
 }
 
-Proceso* Pila::cima()
+Proceso* Pila::cima() const
 {
-	if(!ultimo)
-		return NULL;
-	return ultimo->proceso;
+	return ultimo ? ultimo->proceso : nullptr;
 }
 
-void Pila::mostrar()
+void Pila::mostrar() const
 {
 	pnodoPila aux = ultimo;
 	cout << "\tEl contenido de la pila es: " << endl;
@@ -46,17 +44,17 @@ void Pila::mostrar()
 	cout << endl;
 }
 
-int Pila::getLongitud()
+int Pila::getLongitud() const
 {
 	return this->longitud;
 }
 
-Pila::~Pila()
-{
-	pnodoPila aux;
-	while(ultimo){
-		aux = ultimo;
-		ultimo = ultimo->siguiente;
-		delete aux;
-	}
+bool Pila::estaVacia() const {
+    return ultimo == nullptr;
+}
+
+Pila::~Pila() {
+    while (!estaVacia()) {
+        extraer();
+    }
 }
