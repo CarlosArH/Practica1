@@ -1,4 +1,5 @@
 #include "Pila.hpp"
+#include <algorithm>
 
 Pila::Pila()
 {
@@ -26,6 +27,13 @@ Proceso* Pila:: extraer()
 	longitud--;
 	delete nodo;
 	return p;
+}
+
+void Pila:: vaciar()
+{
+	while(longitud != 0){
+		extraer();
+	}
 }
 
 Proceso* Pila::cima() const
@@ -56,5 +64,23 @@ bool Pila::estaVacia() const {
 Pila::~Pila() {
     while (!estaVacia()) {
         extraer();
+    }
+}
+
+Proceso* Pila::generarProceso(int usuarios, int* array, int i){
+	int pid = array[i];
+	char usuario = "usuario" + char(usuarios++);
+	bool tiempoReal = rand() % 2;
+	Proceso* proceso = new Proceso(pid, usuario, tiempoReal);
+	insertar(proceso);
+}
+
+void Pila::mostrarProcesos() const {
+    pnodoPila actual = pila.ultimo;
+    while (actual != nullptr) {
+        Proceso* proceso = actual.proceso;
+        cout << "El proceso cuyo PID es " << proceso.getPID() 
+                  << " es de tipo " << (proceso.esTiempoReal() ? "en tiempo real" : "normal") << std::endl;
+        actual = actual->siguiente;
     }
 }

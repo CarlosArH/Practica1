@@ -6,7 +6,7 @@ Proceso::Proceso(int pid, string usuario, bool tiempoReal) {
     this->usuario = usuario;
     this->estado = false; // Inicialmente parado
     this->tiempoReal = tiempoReal; // 0 = normal, 1 = tiempo real
-    this->prioridad = tiempoReal ? rand() % 100 : 120 + (rand() % 39) - 19;
+    this->prioridad = prioridad;
 }
 
 Proceso::~Proceso() {
@@ -37,8 +37,15 @@ void Proceso::setEjecucion(bool estado) {
     this->estado = estado;
 }
 
-void Proceso::setPrioridad(int nuevaPrioridad) {
-    this->prioridad = nuevaPrioridad;
+void Proceso::setPrioridad(int* prioridadesTiempoReal, int* prioridadesNormales, int indexTR, int indexN) {
+	setEjecucion(false); // Establecer el estado en parado
+
+	// Asignar prioridad según el tipo de proceso
+	if (esTiempoReal()) {
+		setPrioridad(prioridadesTiempoReal[indexTR++]);
+	} else {
+		setPrioridad(120 + prioridadesNormales[indexN++]); // Aplicar cálculo para procesos normales
+	}
 }
 
 void Proceso::mostrar() const {

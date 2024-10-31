@@ -12,6 +12,7 @@ public():
 	Proceso* eliminar();
 	void mostrar();
 	Proceso* verPrimero();
+	void 
 	
 private:
 	pnodoCola primero, ultimo;

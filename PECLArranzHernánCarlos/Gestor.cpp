@@ -1,5 +1,6 @@
 #include "Gestor.hpp"
 #include <algorithm>
+
 Gestor::Gestor(){
 	pidCounter = 0;
 	usuarioCounter = 0;
@@ -10,69 +11,50 @@ Gestor::Gestor(){
 	}
 	random_shuffle(a, a + n);
 	arrayPIDs = a;
+	int* prioridadesNormales = new int[n]; // Para procesos normales
+	int* prioridadesTiempoReal = new int[n]; // Para procesos en tiempo real
+
+	// Generar prioridades para procesos normales (-19 a +19)
+	for (int i = 0; i < n; ++i) {
+		prioridadesNormales[i] = rand() % 39 - 19; // Generar números entre -19 y +19
+	}
+	random_shuffle(prioridadesNormales, prioridadesNormales + n); // Desordenar prioridades normales
+	// Generar prioridades para procesos en tiempo real (0 a 99)
+	for (int i = 0; i < n; ++i) {
+		prioridadesTiempoReal[i] = rand() % 100; // Generar números entre 0 y 99
+	}
+	random_shuffle(prioridadesTiempoReal, prioridadesTiempoReal + n); // Desordenar prioridades en tiempo real
 }
 void Gestor::genera12Procesos() {
 	for (int i = pidCounter; i < pidCounter+12; i++) {
-        int pid = arrayPIDs[i];
-		
-        std::string usuario = "usuario" + std::to_string(usuarioCounter++);
-        bool tiempoReal = rand() % 2;
-        Proceso* proceso = new Proceso(pid, usuario, tiempoReal);
-        pila.insertar(proceso);
+		pila.generarProceso(usuarioCounter, arrayPIDs, i);
+		usuarioCounter++;
     }
 	pidCounter = pidCounter + 12;
 }
 
 
 void Gestor::muestraProcesos() const {
-    pnodoPila actual = pila.ultimo;
-    while (actual != nullptr) {
-        Proceso* proceso = actual->proceso;
-        std::cout << "El proceso cuyo PID es " << proceso->getPID() 
-                  << " es de tipo " << (proceso->esTiempoReal() ? "en tiempo real" : "normal") << std::endl;
-        actual = actual->siguiente;
-    }
+    pila.mostrarProcesos();
 }
 
 
 void Gestor::borraProcesosPila(){
-	while (!pila.estaVacia()) {
-        pila.extraer();
-    }
+	pila.vaciar();
 }
 void Gestor::encolarProcesos() {
     int n = pila.getLongitud(); 
 	
 	//Comprobar que hay procesos para encolar
 	if n > 0{
-		int* prioridadesNormales = new int[n]; // Para procesos normales
-		int* prioridadesTiempoReal = new int[n]; // Para procesos en tiempo real
-
-		// Generar prioridades para procesos normales (-19 a +19)
-		for (int i = 0; i < n; ++i) {
-			prioridadesNormales[i] = rand() % 39 - 19; // Generar números entre -19 y +19
-		}
-		random_shuffle(prioridadesNormales, prioridadesNormales + n); // Desordenar prioridades normales
-
-		// Generar prioridades para procesos en tiempo real (0 a 99)
-		for (int i = 0; i < n; ++i) {
-			prioridadesTiempoReal[i] = rand() % 100; // Generar números entre 0 y 99
-		}
-		random_shuffle(prioridadesTiempoReal, prioridadesTiempoReal + n); // Desordenar prioridades en tiempo real
-
 		int indexNormales = 0;
 		int indexTiempoReal = 0; 
 		
 		while (!pila.estaVacia()) {
 			Proceso* proceso = pila.extraer();
-			proceso->setEjecucion(false); // Establecer el estado en parado
-
-			// Asignar prioridad según el tipo de proceso
-			if (proceso->esTiempoReal()) {
-				proceso->setPrioridad(prioridadesTiempoReal[indexTiempoReal++]);
-			} else {
-				proceso->setPrioridad(120 + prioridadesNormales[indexNormales++]); // Aplicar cálculo para procesos normales
-			}
+			proceso.setPrioridad(prioridadesTiempoReal, prioridadesNormales, indexTiempoReal, indexNormales);
+			indexTiempoReal++;
+			indexNormales++;
 
 			//Determinar la cola en la que tine que ir según el tipo de cola y según la longitud de cada cola
 			int indiceCola = 0;
@@ -83,13 +65,9 @@ void Gestor::encolarProcesos() {
 			}
 			colas[indiceCola].insertar(proceso);
 		}
-
-		// Liberar memoria
-		delete[] prioridadesNormales;
-		delete[] prioridadesTiempoReal;
 	}
 	else{
-		std::cout << "No hay procesos en pila para encolar." << std::endl;
+		cout << "No hay procesos en pila para encolar." << std::endl;
 	}
 }
 

@@ -23,6 +23,5 @@ public:
     void setEjecucion(bool estado);
     void setPrioridad(int nuevaPrioridad);
     void mostrar() const;
-	int* GenerarPIDs() const;
 };
 #endif // PROCESO_HPP
